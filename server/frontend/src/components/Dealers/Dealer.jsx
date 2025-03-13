@@ -66,7 +66,6 @@ const Dealer = () => {
     }
   },[]);  
 
-
 return(
   <div style={{margin:"20px"}}>
       <Header/>
