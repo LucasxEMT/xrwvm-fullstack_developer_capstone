@@ -20,32 +20,36 @@ const Register = () => {
 
   const register = async (e) => {
     e.preventDefault();
+    try {
+        //let register_url = window.location.origin+"/djangoapp/register";
+        let register_url = window.location.origin + "/djangoapp/registration/";
+        
+        const res = await fetch(register_url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "userName": userName,
+                "password": password,
+                "firstName":firstName,
+                "lastName":lastName,
+                "email":email
+            }),
+        });
 
-    //let register_url = window.location.origin+"/djangoapp/register";
-    let register_url = window.location.origin + "/djangoapp/registration/";
-
-    const res = await fetch(register_url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            "userName": userName,
-            "password": password,
-            "firstName":firstName,
-            "lastName":lastName,
-            "email":email
-        }),
-    });
-
-    const json = await res.json();
-    if (json.status) {
-        sessionStorage.setItem('username', json.userName);
+        const json = await res.json();
+        if (json.status) {
+            sessionStorage.setItem('username', json.userName);
+            window.location.href = window.location.origin;
+        }
+        else if (json.error === "Already Registered") {
+        alert("The user with same username is already registered");
         window.location.href = window.location.origin;
-    }
-    else if (json.error === "Already Registered") {
-      alert("The user with same username is already registered");
-      window.location.href = window.location.origin;
+        }
+    } catch (error) {
+        console.error("Error during registration:", error);
+        alert("Something went wrong. Check the console.");
     }
 };
 
