@@ -89,30 +89,50 @@ def get_cars(request):
     print(count)
     if count == 0:
         initiate()
-    car_models = CarModel.objects.select_related("car_make")
+    car_models = CarModel.objects.select_related('car_make')
     cars = []
     for car_model in car_models:
-        cars.append({"CarModel": car_model.name, "CarMake": car_model.car_make.name})
+        cars.append(
+            {
+                "CarModel": car_model.name,
+                "CarMake": car_model.car_make.name
+            }
+        )
     return JsonResponse({"CarModels": cars})
 
 #Update the `get_dealerships` render list of dealerships all by default, particular state if state is passed
 def get_dealerships(request, state="All"):
+    logger.info("Called function get_dealerships ")
     if(state == "All"):
         endpoint = "/fetchDealers"
     else:
         endpoint = "/fetchDealers/"+state
-    dealerships = get_request(endpoint)
-    return JsonResponse({"status":200,"dealers":dealerships})
+    
+    base_url = "https://lucas1234517-3030.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai"
+    full_url = base_url + endpoint
+    logger.info("Full URL used: %s", full_url)
+
+    try:
+        dealerships = get_request(endpoint)
+        logger.info("Dealerships response: %s", dealerships)
+    except Exception as e:
+        logger.error("Error fetching dealerships: %s", e, exc_info=True)
+        return JsonResponse({"status": 500, "error": "Error fetching dealerships"})
+
+    return JsonResponse({"status": 200, "dealers": dealerships})
 
 def get_dealer_reviews(request, dealer_id):
     # if dealer id has been provided
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/"+str(dealer_id)
         reviews = get_request(endpoint)
-        for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            print(response)
+    for review_detail in reviews:
+        response = analyze_review_sentiments(review_detail['review'])
+        if response and 'sentiment' in response:
             review_detail['sentiment'] = response['sentiment']
+        else:
+            # You might set a default value or log a warning
+            review_detail['sentiment'] = "unknown"
         return JsonResponse({"status":200,"reviews":reviews})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})

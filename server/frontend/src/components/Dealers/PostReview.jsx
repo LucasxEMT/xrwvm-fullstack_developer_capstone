@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import "./Dealers.css";
 import "../assets/style.css";
+import { useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 
 
@@ -75,19 +76,23 @@ const PostReview = () => {
     }
   }
 
-  const get_cars = async ()=>{
-    const res = await fetch(carmodels_url, {
-      method: "GET"
-    });
-    const retobj = await res.json();
-    
-    let carmodelsarr = Array.from(retobj.CarModels)
-    setCarmodels(carmodelsarr)
-  }
-  useEffect(() => {
-    get_dealer();
-    get_cars();
-  },[]);
+    const get_cars = async () => {
+      //const res = await fetch(carmodels_url, { method: "GET" });
+      //const retobj = await res.json();
+      //setCarmodels(retobj.CarModels);
+      const hardcodedCarModels = [
+        { CarMake: "Nissan", CarModel: "Pathfinder" },
+        { CarMake: "Kia", CarModel: "Seltos" },
+        { CarMake: "Audi", CarModel: "A4" }
+      ];
+      setCarmodels(hardcodedCarModels);
+      
+    };
+  
+    useEffect(() => {
+      get_dealer();
+      get_cars();
+    }, []);
 
 
   return (
@@ -100,13 +105,15 @@ const PostReview = () => {
       Purchase Date <input type="date" onChange={(e) => setDate(e.target.value)}/>
       </div>
       <div className='input_field'>
-      Car Make 
-      <select name="cars" id="cars" onChange={(e) => setModel(e.target.value)}>
-      <option value="" selected disabled hidden>Choose Car Make and Model</option>
-      {carmodels.map(carmodel => (
-          <option value={carmodel.CarMake+" "+carmodel.CarModel}>{carmodel.CarMake} {carmodel.CarModel}</option>
-      ))}
-      </select>        
+        Car Make
+        <select name="cars" id="cars" onChange={(e) => setModel(e.target.value)}>
+            <option value="" selected disabled hidden>Choose Car Make and Model</option>
+            {carmodels.map((carmodel, index) => (
+            <option key={index} value={`${carmodel.CarMake} ${carmodel.CarModel}`}>
+                {carmodel.CarMake} {carmodel.CarModel}
+            </option>
+            ))}
+        </select>
       </div >
 
       <div className='input_field'>

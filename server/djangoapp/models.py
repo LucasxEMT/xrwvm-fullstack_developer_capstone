@@ -12,18 +12,24 @@ class CarMake(models.Model):
 
 class CarModel(models.Model):
     car_make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=50)
     CAR_TYPES = [
         ('SEDAN', 'Sedan'),
         ('SUV', 'SUV'),
         ('WAGON', 'Wagon'),
+        ('HATCHBACK', 'Hatchback'),
+        ('COUPE', 'Coupe'),
+        ('MINIVAN', 'Minivan'),
+        ('CONVERTIBLE', 'Convertible'),
+        ('PICKUP', 'Pickup'),
     ]
-    type = models.CharField(max_length=10, choices=CAR_TYPES)
+    type = models.CharField(max_length=20, choices=CAR_TYPES, default='SUV')
     year = models.IntegerField(
-        validators=[            
-            MaxValueValidator(2023),
-            MinValueValidator(2015)
-            ]
+        default=2023,
+        validators=[
+            MaxValueValidator(2025),
+            MinValueValidator(2015),
+        ]
     )
 
     def __str__(self):
