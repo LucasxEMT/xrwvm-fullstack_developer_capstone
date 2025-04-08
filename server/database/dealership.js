@@ -1,4 +1,4 @@
-/* jshint esversion: 10 */
+/* jshint node: true, esversion: 10, globalstrict: true */
 'use strict';
 
 const mongoose = require('mongoose');
