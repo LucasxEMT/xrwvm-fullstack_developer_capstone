@@ -1,11 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
-from django.contrib import messages
-from django.http import JsonResponse
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
 import logging
 import json
+
+from django.http import JsonResponse
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import CarMake, CarModel
 from .populate import initiate
