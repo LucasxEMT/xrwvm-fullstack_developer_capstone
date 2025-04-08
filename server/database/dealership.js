@@ -1,13 +1,15 @@
-const mongoose = require('mongoose');
+/* jshint esversion: 10 */
+'use strict';
 
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const dealerships = new Schema({
-	id: {
+  id: {
     type: Number,
-    required: true,
-	},
-	city: {
+    required: true
+  },
+  city: {
     type: String,
     required: true
   },
@@ -32,7 +34,7 @@ const dealerships = new Schema({
     required: true
   },
   short_name: {
-    type: String,
+    type: String
   },
   full_name: {
     type: String,
