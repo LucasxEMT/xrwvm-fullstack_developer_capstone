@@ -9,6 +9,15 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import CarMake, CarModel
 from .populate import initiate
 from .restapis import get_request, analyze_review_sentiments, post_review
+from dotenv import load_dotenv
+import os
+
+# Load .env file
+load_dotenv()
+
+# Read environment variable
+# The second argument is an optional default if backend_url is not found
+backend_url = os.getenv("backend_url", "https://lucas1234517-3030.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai")
 
 logger = logging.getLogger(__name__)
 
@@ -98,11 +107,8 @@ def get_dealerships(request, state="All"):
         endpoint = "/fetchDealers"
     else:
         endpoint = "/fetchDealers/" + state
-    base_url = (
-        "https://lucas1234517-3030.theiadockernext-1-labs-prod-"
-        "theiak8s-4-tor01.proxy.cognitiveclass.ai"
-    )
-    full_url = base_url + endpoint
+
+    full_url = backend_url + endpoint
     logger.info("Full URL used: %s", full_url)
     try:
         dealerships = get_request(endpoint)
