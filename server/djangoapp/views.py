@@ -98,69 +98,47 @@ def get_cars(request):
     return JsonResponse({"CarModels": cars})
 
 
+#Update the `get_dealerships` render list of dealerships all by default, particular state if state is passed
 def get_dealerships(request, state="All"):
-    """
-    Fetch dealerships. If state is 'All', fetch all; otherwise fetch by state.
-    """
-    logger.info("Called function get_dealerships")
-    if state == "All":
+    if(state == "All"):
         endpoint = "/fetchDealers"
     else:
-        endpoint = "/fetchDealers/" + state
-
-    full_url = backend_url + endpoint
-    logger.info("Full URL used: %s", full_url)
-    try:
-        dealerships = get_request(endpoint)
-        logger.info("Dealerships response: %s", dealerships)
-    except Exception as e:
-        logger.error("Error fetching dealerships: %s", e, exc_info=True)
-        return JsonResponse({
-            "status": 500,
-            "error": "Error fetching dealerships"
-        })
-    return JsonResponse({"status": 200, "dealers": dealerships})
+        endpoint = "/fetchDealers/"+state
+    dealerships = get_request(endpoint)
+    return JsonResponse({"status":200,"dealers":dealerships})
 
 
 def get_dealer_reviews(request, dealer_id):
-    """
-    Get reviews for a given dealer_id, analyze sentiments, return JSON.
-    """
-    if dealer_id:
-        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
+    # if dealer id has been provided
+    if(dealer_id):
+        endpoint = "/fetchReviews/dealer/"+str(dealer_id)
         reviews = get_request(endpoint)
         for review_detail in reviews:
             response = analyze_review_sentiments(review_detail['review'])
-            if response and 'sentiment' in response:
-                review_detail['sentiment'] = response['sentiment']
-            else:
-                review_detail['sentiment'] = "unknown"
-        return JsonResponse({"status": 200, "reviews": reviews})
-    return JsonResponse({"status": 400, "message": "Bad Request"})
+            print(response)
+            review_detail['sentiment'] = response['sentiment']
+        return JsonResponse({"status":200,"reviews":reviews})
+    else:
+        return JsonResponse({"status":400,"message":"Bad Request"})
 
 
 def get_dealer_details(request, dealer_id):
-    """
-    Get a single dealer's details using a dealer_id.
-    """
-    if dealer_id:
-        endpoint = "/fetchDealer/" + str(dealer_id)
+    if(dealer_id):
+        endpoint = "/fetchDealer/"+str(dealer_id)
         dealership = get_request(endpoint)
-        return JsonResponse({"status": 200, "dealer": dealership})
-    return JsonResponse({"status": 400, "message": "Bad Request"})
+        return JsonResponse({"status":200,"dealer":dealership})
+    else:
+        return JsonResponse({"status":400,"message":"Bad Request"})
 
 
 @csrf_exempt
 def add_review(request):
-    """
-    Add a review if user is authenticated. POST data in JSON body.
-    """
-    if not request.user.is_anonymous:
+    if(request.user.is_anonymous == False):
         data = json.loads(request.body)
         try:
-            post_review(data)
-            return JsonResponse({"status": 200})
-        except Exception as err:
-            logger.error("Error posting review: %s", err, exc_info=True)
-            return JsonResponse({"status": 401, "message": "Error in posting"})
-    return JsonResponse({"status": 403, "message": "Unauthorized"})
+            response = post_review(data)
+            return JsonResponse({"status":200})
+        except:
+            return JsonResponse({"status":401,"message":"Error in posting review"})
+    else:
+        return JsonResponse({"status":403,"message":"Unauthorized"})
